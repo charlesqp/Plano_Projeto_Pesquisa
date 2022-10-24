@@ -1,0 +1,237 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{ae}
+\usepackage{indentfirst}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsthm,amssymb,amsfonts,amsmath}
+\usepackage{graphicx}
+\usepackage{psfrag}
+\usepackage{booktabs}
+\usepackage[numbers]{natbib}
+\usepackage{enumitem}
+\usepackage{colortbl,booktabs}
+
+\bibliography{references}
+
+\begin{document}
+
+\input{capa}
+
+\section{Introdução}
+
+Impulsionado pelas mudanças climáticas, a busca pela redução de emissões de gases do 
+efeito estufa veem impulsionando a busca por combustíveis alternativos e a 
+comercialização de veículos elétricos (Evs) e híbridos (HEVs).
+
+Nos últimos anos, sistemas dinâmicos associados a diferentes problemas
+nas diversas áreas de engenharia têm sido estudados por meio de
+modelos matemáticos cada vez mais complexos e completos. A existência
+de distúrbios externos, incertezas paramétricas, dinâmicas não
+modeladas, acoplamentos não lineares e, também, falhas (em atuadores, em
+sensores, escorregamento, entre outras) são fatores que impactam o
+funcionamento da planta, comprometendo seu desempenho ou, em casos
+extremos, ocasionando instabilidades~\cite{XG:00,GC:14,LYCC:16}.
+
+
+Em face dos problemas supracitados, desenvolver métodos que minimizem
+ou anulem distúrbios externos e que sejam capazes de contornar
+possíveis falhas no sistema, isto é, sejam tolerantes às falhas, tem
+sido uma área de grande interesse em pesquisas recentes. Os principais
+métodos existentes na literatura baseiam-se na filtragem de
+Kalman~\cite{YCY:05,CH:16} e na síntese de 
+observadores~\cite{LM:90,FF:12,WJ:13,ZDZ:16,CYGL:16} para a estimação
+das falhas e distúrbios sobre a planta de interesse. Com respeito ao
+projeto de observadores, os observadores com entradas desconhecidas
+(em inglês, \emph{unknown input observers} --- UIOs) são largamente
+utilizados tanto para a rejeição de distúrbios externos e correta
+estimação dos estados do sistema quanto para a identificação de falhas
+em diversos
+contextos~\cite{TP:99a,Koe:05,Koe:06,LGBdS:11,IM:15,CYGL:16}.
+
+Para realizar a síntese de UIOs pode-se, por exemplo, transformar o
+problema em um procedimento de otimização convexa o qual pode ser
+resolvido, em particular, por meio de programação semi-definida,
+utilizando desigualdades matriciais lineares (em inglês, \emph{Linear
+  Matrix Inequalities} --- LMIs) como
+restrições~\cite{BEFB:94,EN:00,B-TEN:00}.
+
+É inegável a importância dos resultados derivados da análise de
+estabilidade por meio de funções de Lyapunov~\cite{Lya:92}. Ao longo
+dos últimos anos, inúmeros trabalhos utilizando LMIs e funções de
+Lyapunov proporcionaram estratégias para análise de estabilidade de
+sistemas com incertezas, com extensões para a síntese de
+controladores, filtros e observadores robustos. Os resultados para
+análise de estabilidade e suas extensões evoluíram da função
+quadrática com uma matriz de Lyapunov constante~\cite{BPG:89,GPB:91},
+passando por formas afins, como em~\cite{dOBG:99,LP:03,PABB:00}
+(utilizando variáveis extras advindas do Lema de
+Finsler~\cite{dOS:01}) e~\cite{RP:01a,RP:02} (explorando diretamente a
+expressão polinomial da LMI dependente de parâmetros), até chegar à
+caracterização completa por meio de funções de Lyapunov polinomiais de
+grau genérico construídas a partir de relaxações LMIs
+convergentes~\cite{Bli:04a,CGTV:05b,Sch:05,OP:07a,SH:06,OdOP:08,CGTV:09,Che:10}.
+
+
+Os objetivos principais deste plano de trabalho incluem o projeto de
+UIOs e a síntese de controladores tolerantes a falhas para sistemas
+dinâmicos (contínuos e discretos) utilizando funções de Lyapunov
+dependentes de parâmetros, desenvolvendo, sempre que possível, as
+condições sob a forma de LMIs. Os métodos desenvolvidos serão
+validados por meio de simulações computacionais e, posteriormente,
+serão realizados ensaios práticos para corroborar os resultados
+obtidos.
+
+A seguir é apresentada uma breve descrição do problema de projeto de
+UIOs para sistemas dinâmicos contínuos no tempo.
+
+
+\section{Descrição do problema}
+
+Uma classe de sistemas lineares de particular interesse é a classe de
+sistemas com parâmetros variantes no tempo, descritos genericamente
+por
+\begin{equation}
+  \label{eq:slpv}
+  \begin{aligned}
+    \dot{x}(t) &= A(\xi(t)) x(t) + B(\xi(t)) u(t) + D(\xi(t)) d(t) +
+    F(\xi(t)) f(t) \\
+    y(t) &= C x(t)
+  \end{aligned}
+\end{equation}
+sendo $x(t) \in \mathbb{R}^n$ o estado, $u(t) \in \mathbb{R}^m$ uma
+entrada conhecida, $d(t) \in \mathbb{R}^d$ uma entrada de distúrbio
+desconhecida, $f(t) \in \mathbb{R}^r$ um vetor de falhas do sistema e
+$y(t) \in \mathbb{R}^p$ a saída. As matrizes
+$(A(\xi(t)),B(\xi(t)),D(\xi(t)),F(\xi(t))) \in \mathcal{D}$, com
+\begin{gather}
+  \mathcal{D} = \left\{(A(\xi(t)),B(\xi(t)),D(\xi(t)),F(\xi(t))) =
+    \sum_{i=1}^{N}\xi_i(t)(A,B,D,F)_i, \quad \xi_i(t) \geq 0, \quad
+    \sum_{i=1}^{N}\xi_i(t) = 1\right\}
+\end{gather}
+ou seja, o conjunto $\mathcal{D}$ é um politopo descrito pela
+combinação convexa dos vértices $(A,B,D,F)_i$, $i = 1, \dotsc, N$,
+supostos conhecidos. Modelos assim podem ser também utilizados para
+tratar sistemas nebulosos~\cite{TS:85,TW:01} ou especializados para o
+caso de sistemas com parâmetros invariantes no tempo, isto é, sistemas
+incertos.
+
+Sem a presença de falhas e de distúrbios desconhecidos no sistema, um
+observador de Luenberger~\cite{Lue:71} pode ser empregado para estimar
+os estados não acessíveis do sistema a partir da saída
+medida~$y(t)$. Todavia, a existência de tais sinais indesejáveis torna
+a estrutura do observador de Luenberger não mais adequada para uma boa
+estimação dos estados, fazendo-se, portanto, necessária a
+implementação de um observador capaz de rejeitar os distúrbios
+desconhecidos~$d(t)$ e estimar adequadamente tanto os estados do
+sistema quanto as falhas~$f(t)$. Nesse sentido, surgem os UIOs como
+uma alternativa para se estimar os estados e possíveis falhas do
+sistema, ao mesmo tempo que os distúrbios são desconsiderados. De
+forma geral, a estrutura de um UIO é dada por
+\begin{equation}
+  \label{eq:observer}
+  \begin{aligned}
+    \dot{z}(t) &= N(\xi(t)) z(t) + G(\xi(t)) u(t) + L(\xi(t)) y(t) \\
+    \hat{x}(t) &= z(t) - H y(t)
+  \end{aligned}
+\end{equation}
+sendo $z(t) \in \mathbb{R}^n$ o estado do observador e $\hat{x}(t) \in
+\mathbb{R}^n$ o estado estimado do sistema.
+
+Restrições adicionais como especificações de desempenho em termos de
+normas $\mathcal{H}_2$ e $\mathcal{H}_\infty$ e presença de não
+linearidades específicas, como saturação, podem também ser
+consideradas. O projeto de controladores tolerantes a falhas baseados
+em UIOs~\cite{BFKPS:00,BSW:01,YCY:05,CH:16} é outro tópico de bastante
+interesse.
+
+\subsection{Tópicos de investigação}
+
+É objetivo deste plano adotar metodologias baseadas em programação
+semi-definida para tratar problemas como os descritos acima, com
+ênfase para novas contribuições para a síntese de UIOs e controladores
+tolerantes a falhas. Nesse contexto, serão utilizadas funções de
+Lyapunov polinomiais e LMIs. Entre outros, os seguinte problemas serão
+investigados neste plano de trabalho:
+\begin{itemize}
+\item Projeto de observadores com entradas desconhecidas para sistemas
+  incertos e variantes no tempo, podendo apresentar não linearidades;
+
+\item Especificações de desempenho;
+  
+\item Projeto de controladores tolerantes a falhas;
+\end{itemize}
+Serão tratados modelos contínuos e discretos no tempo.
+
+\section{Metodologia}
+
+A metodologia básica utiliza programação semi-definida, funções de
+Lyapunov polinomiais e condições escritas na forma de LMIs, que podem
+ser solucionadas em tempo polinomial por pacotes
+especializados~\cite{BEFB:94,EN:00,Stu:99,Lof:04,Mos:15}.
+
+\section{Plano de trabalho e cronograma}
+
+Este plano de mestrado está previsto para dezoito meses de duração,
+compreendendo as seguintes etapas:
+
+\begin{enumerate}[label=\textbf{\alph*)}]
+\item Cumprimento dos créditos necessários para o programa de
+  mestrado;
+  
+\item Levantamento bibliográfico, estudo de abordagens e ferramentas
+  existentes, familiarização com os resultados baseados em programação
+  semi-definida, funções de Lyapunov polinomiais e LMIs;
+  
+\item Extensão das abordagens existentes para o projeto de
+  observadores com entradas desconhecidas considerando incertezas na
+  matriz de saída, falhas e ruídos em medidas e desenvolvimento de
+  novos métodos;
+  
+\item Simulações e implementações dos métodos desenvolvidos;
+  
+\item Ensaios práticos em plantas disponíveis na Escola de Engenharia;
+
+\item Projeto de controladores tolerantes a falhas;
+  
+\item Redação de artigos técnicos;
+
+\item Redação do manuscrito.
+\end{enumerate}
+
+O cronograma da Tabela~\ref{tab:cronograma} apresenta,
+aproximadamente, a distribuição das etapas descritas ao longo dos
+trimestres.
+
+\begin{table}[!ht]
+  \caption{Cronograma proposto para o projeto de mestrado.}
+  \label{tab:cronograma}
+  \begin{center}
+    \begin{tabular}{ccccccc}
+      & $1^{\tiny o}$ trim & $2^{\tiny o}$ trim & $3^{\tiny o}$ trim & $4^{\tiny o}$ trim & $5^{\tiny o}$ trim & $6^{\tiny o}$ trim \\
+      \toprule
+      \textbf{a)} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & & & & \\
+      \midrule
+      \textbf{b)} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & & & \\
+      \midrule
+      \textbf{c)} & & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & & \\
+      \midrule
+      \textbf{d)} & & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \\
+      \midrule
+      \textbf{e)} & & & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} \\
+      \midrule
+      \textbf{f)} & & & & & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} \\
+      \midrule
+      \textbf{g)} & & & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} & \cellcolor[rgb]{0.5,0.5,0.5}{} \\
+      \midrule
+      \textbf{h)} & & & & & & \cellcolor[rgb]{0.5,0.5,0.5}{} \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\bibliographystyle{plainnat}
+\bibliography{listacompleta,sdp,filtering,polinomial,sispot,estab,fldp,hoofilt,robust,fuzzy,estgeral,bibluciano}
+
+\end{document}
